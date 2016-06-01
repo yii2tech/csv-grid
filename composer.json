@@ -1,0 +1,30 @@
+{
+    "name": "yii2tech/csv",
+    "description": "Yii2 extension data export to CSV file",
+    "keywords": ["yii2", "csv", "export"],
+    "type": "yii2-extension",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yii2tech/csv-grid/issues",
+        "forum": "http://www.yiiframework.com/forum/",
+        "wiki": "https://github.com/yii2tech/csv-grid/wiki",
+        "source": "https://github.com/yii2tech/csv-grid"
+    },
+    "authors": [
+        {
+            "name": "Paul Klimov",
+            "email": "klimov.paul@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": { "yii2tech\\csvgrid\\": "" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}
