@@ -4,6 +4,7 @@ namespace yii2tech\tests\unit\csvgrid;
 
 use yii\helpers\ArrayHelper;
 use Yii;
+use yii\helpers\FileHelper;
 
 /**
  * Base class for the test cases.
@@ -13,7 +14,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-
         $this->mockApplication();
     }
 
@@ -21,6 +21,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     {
         parent::tearDown();
         $this->destroyApplication();
+        $this->removeTestFilePath();
     }
 
     /**
@@ -52,6 +53,34 @@ class TestCase extends \PHPUnit_Framework_TestCase
     protected function destroyApplication()
     {
         Yii::$app = null;
+    }
+
+    /**
+     * @return string test file path
+     */
+    protected function getTestFilePath()
+    {
+        return Yii::getAlias('@runtime/html2pdf-test');
+    }
+
+    /**
+     * Ensures test file path exists.
+     * @return string test file path
+     */
+    protected function ensureTestFilePath()
+    {
+        $path = $this->getTestFilePath();
+        FileHelper::createDirectory($path);
+        return $path;
+    }
+
+    /**
+     * Removes the test file path.
+     */
+    protected function removeTestFilePath()
+    {
+        $path = $this->getTestFilePath();
+        FileHelper::removeDirectory($path);
     }
 
     /**

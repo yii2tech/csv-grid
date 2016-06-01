@@ -44,36 +44,6 @@ class Column extends Object
 
 
     /**
-     * Renders the header cell.
-     * @return string the rendering result
-     */
-    public function renderHeaderCell()
-    {
-        return $this->renderHeaderCellContent();
-    }
-
-    /**
-     * Renders the footer cell.
-     * @return string the rendering result
-     */
-    public function renderFooterCell()
-    {
-        return $this->renderFooterCellContent();
-    }
-
-    /**
-     * Renders a data cell.
-     * @param mixed $model the data model being rendered
-     * @param mixed $key the key associated with the data model
-     * @param integer $index the zero-based index of the data item among the item array returned by [[GridView::dataProvider]].
-     * @return string the rendering result
-     */
-    public function renderDataCell($model, $key, $index)
-    {
-        return $this->renderDataCellContent($model, $key, $index);
-    }
-
-    /**
      * Renders the header cell content.
      * The default implementation simply renders [[header]].
      * This method may be overridden to customize the rendering of the header cell.
@@ -109,16 +79,5 @@ class Column extends Object
         } else {
             return $this->grid->emptyCell;
         }
-    }
-
-    /**
-     * Renders the filter cell content.
-     * The default implementation simply renders a space.
-     * This method may be overridden to customize the rendering of the filter cell (if any).
-     * @return string the rendering result
-     */
-    public function renderFilterCellContent()
-    {
-        return $this->grid->emptyCell;
     }
 }

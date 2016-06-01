@@ -35,6 +35,11 @@ class CsvGrid extends Component
      */
     public $query;
     /**
+     * @var integer the number of records to be fetched in each batch.
+     * This property takes effect only in case of [[query]] usage.
+     */
+    public $batchSize = 100;
+    /**
      * @var array|Column[]
      */
     public $columns = [];
@@ -60,17 +65,19 @@ class CsvGrid extends Component
      */
     public $nullDisplay = '';
     /**
-     * @var string delimiter between the CSV file rows.
+     * @var integer the maximum entries count allowed in single file.
+     *
+     * For example: 'Open Office' and 'MS Excel 97-2003' allows maximum 65536 rows per CSV file,
+     * 'MS Excel 2007' - 1048576.
+     *
+     * If this value is empty - no limit checking will be performed.
      */
-    public $rowDelimiter = "\r\n";
+    public $maxEntriesPerFile;
+
     /**
-     * @var string delimiter between the CSV file cells.
+     * @var ExportResult export result instance.
      */
-    public $cellDelimiter = ',';
-    /**
-     * @var string the cell content enclosure.
-     */
-    public $enclosure = '"';
+    protected $exportResult;
 
     /**
      * @var array|Formatter the formatter used to format model attribute values into displayable texts.
@@ -78,6 +85,10 @@ class CsvGrid extends Component
      * instance. If this property is not set, the "formatter" application component will be used.
      */
     private $_formatter;
+    /**
+     * @var boolean indicates whether [[columns]] have been initialized or not.
+     */
+    private $columnsInitialized = false;
 
 
     /**
@@ -93,13 +104,11 @@ class CsvGrid extends Component
                 $this->dataProvider = new ActiveDataProvider([
                     'query' => $this->query,
                     'pagination' => [
-                        'pageSize' => 100,
+                        'pageSize' => $this->batchSize,
                     ],
                 ]);
             }
         }
-
-        $this->initColumns();
     }
 
     /**
@@ -127,11 +136,12 @@ class CsvGrid extends Component
 
     /**
      * Creates column objects and initializes them.
+     * @param array $model list of single row model
      */
-    protected function initColumns()
+    protected function initColumns($model)
     {
         if (empty($this->columns)) {
-            $this->guessColumns();
+            $this->guessColumns($model);
         }
         foreach ($this->columns as $i => $column) {
             if (is_string($column)) {
@@ -148,16 +158,17 @@ class CsvGrid extends Component
             }
             $this->columns[$i] = $column;
         }
+
+        $this->columnsInitialized = true;
     }
 
     /**
      * This function tries to guess the columns to show from the given data
      * if [[columns]] are not explicitly specified.
+     * @param array $model list of model
      */
-    protected function guessColumns()
+    protected function guessColumns($model)
     {
-        $models = $this->dataProvider->getModels();
-        $model = reset($models);
         if (is_array($model) || is_object($model)) {
             foreach ($model as $name => $value) {
                 $this->columns[] = (string) $name;
@@ -184,5 +195,127 @@ class CsvGrid extends Component
             'format' => isset($matches[3]) ? $matches[3] : 'text',
             'label' => isset($matches[5]) ? $matches[5] : null,
         ]);
+    }
+
+    public function export()
+    {
+        $this->prepareExportResult();
+
+        if ($this->query !== null && method_exists($this->query, 'batch')) {
+            foreach ($this->query->batch($this->batchSize) as $models) {
+                $this->exportModels($models, []);
+            }
+        } else {
+            $pagination = $this->dataProvider->getPagination();
+            if ($pagination === false) {
+                $this->exportModels($this->dataProvider->getModels(), $this->dataProvider->getKeys());
+            } else {
+                $page = 0;
+                while ($page < $pagination->pageCount) {
+                    $pagination->setPage($page);
+                    $this->dataProvider->prepare(true);
+                    $this->exportModels($this->dataProvider->getModels(), []);
+                }
+            }
+        }
+
+        return $this->exportResult;
+    }
+
+    /**
+     * Exports a list of models.
+     * @param array $models models to be exported
+     * @param array $keys model keys.
+     */
+    protected function exportModels($models, $keys)
+    {
+        if (!$this->columnsInitialized) {
+            $this->initColumns(reset($models));
+        }
+
+        $maxEntriesPerFile = false;
+        if (!empty($this->maxEntriesPerFile)) {
+            $maxEntriesPerFile = $this->maxEntriesPerFile;
+            if ($this->showFooter) {
+                $maxEntriesPerFile--;
+            }
+        }
+
+        $csvFile = null;
+        foreach ($models as $index => $model) {
+            if (!is_object($csvFile)) {
+                $csvFile = $this->exportResult->newCsvFile();
+                if ($this->showHeader) {
+                    $csvFile->writeRow($this->composeHeaderRow());
+                }
+            }
+
+            $key = isset($keys[$index]) ? $keys[$index] : $index;
+            $csvFile->writeRow($this->composeBodyRow($model, $key, $index));
+
+            if ($maxEntriesPerFile !== false && $csvFile->entriesCount >= $maxEntriesPerFile) {
+                if ($this->showFooter) {
+                    $csvFile->writeRow($this->composeFooterRow());
+                }
+                $csvFile->close();
+            }
+        }
+
+        if (is_object($csvFile)) {
+            if ($this->showFooter) {
+                $csvFile->writeRow($this->composeFooterRow());
+            }
+            $csvFile->close();
+        }
+    }
+
+    /**
+     * Prepares [[exportResult]] for the usage.
+     */
+    protected function prepareExportResult()
+    {
+        $this->exportResult = new ExportResult();
+    }
+
+    /**
+     * Composes header row contents.
+     * @return array cell contents.
+     */
+    protected function composeHeaderRow()
+    {
+        $cells = [];
+        foreach ($this->columns as $column) {
+            $cells[] = $column->renderHeaderCellContent();
+        }
+        return $cells;
+    }
+
+    /**
+     * Composes header row contents.
+     * @return array cell contents.
+     */
+    protected function composeFooterRow()
+    {
+        $cells = [];
+        foreach ($this->columns as $column) {
+            $cells[] = $column->renderFooterCellContent();
+        }
+        return $cells;
+    }
+
+    /**
+     * Composes body row contents.
+     * @param mixed $model the data model
+     * @param mixed $key the key associated with the data model
+     * @param integer $index the zero-based index of the data model among the models array returned by [[GridView::dataProvider]].
+     * @return array cell contents.
+     */
+    protected function composeBodyRow($model, $key, $index)
+    {
+        $cells = [];
+        foreach ($this->columns as $column) {
+            $cells[] = $column->renderDataCellContent($model, $key, $index);
+        }
+        return $cells;
     }
 }

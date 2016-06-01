@@ -9,20 +9,37 @@ namespace yii2tech\csvgrid;
 
 use yii\base\Exception;
 use yii\base\Object;
+use yii\helpers\FileHelper;
 
 /**
- * File represents the CSV file.
+ * CsvFile represents the CSV file.
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */
-class File extends Object
+class CsvFile extends Object
 {
     /**
      * @var string the path of the file.
      * Note, this is a temporary file which will be automatically deleted on object destruction.
      */
     public $name;
+    /**
+     * @var string delimiter between the CSV file rows.
+     */
+    public $rowDelimiter = "\r\n";
+    /**
+     * @var string delimiter between the CSV file cells.
+     */
+    public $cellDelimiter = ',';
+    /**
+     * @var string the cell content enclosure.
+     */
+    public $enclosure = '"';
+    /**
+     * @var integer the count of entries written into the file.
+     */
+    public $entriesCount = 0;
 
     /**
      * @var resource file resource handler.
@@ -32,11 +49,11 @@ class File extends Object
 
     /**
      * Destructor.
-     * Removes associated temporary file if it exists.
+     * Makes sure the opened file is closed.
      */
     public function __destruct()
     {
-        $this->delete();
+        $this->close();
     }
 
     /**
@@ -47,6 +64,7 @@ class File extends Object
     public function open()
     {
         if ($this->fileHandler === null) {
+            FileHelper::createDirectory(dirname($this->name));
             $this->fileHandler = fopen($this->name, 'w+');
             if ($this->fileHandler === false) {
                 throw new Exception('Unable to create/open file "' . $this->name . '".');
@@ -79,6 +97,55 @@ class File extends Object
             unlink($this->name);
         }
         return true;
+    }
+
+    /**
+     * Writes the given row data into the file in CSV format.
+     * @param mixed $rowData raw data can be array or object.
+     * @return integer the number of bytes written.
+     */
+    public function writeRow($rowData)
+    {
+        $result = $this->writeContent($this->composeRowContent($rowData));
+        $this->entriesCount++;
+        return $result;
+    }
+
+    /**
+     * Composes the given data into the CSV row.
+     * @param array $rowData data to be composed.
+     * @return string CSV format row
+     */
+    protected function composeRowContent($rowData)
+    {
+        $securedRowData = [];
+        foreach ($rowData as $content) {
+            $securedRowData[] = $this->encodeValue($content); // unable to use `array_map()` against objects
+        }
+
+        if ($this->entriesCount > 0) {
+            $rowContent = $this->rowDelimiter;
+        } else {
+            $rowContent = '';
+        }
+        $rowContent .= implode($this->cellDelimiter, $securedRowData);
+        return $rowContent;
+    }
+
+    /**
+     * Secures the given value so it can be written in CSV cell.
+     * @param string $value value to be secured
+     * @return mixed secured value.
+     */
+    protected function encodeValue($value)
+    {
+        $value = (string)$value;
+
+        if (empty($this->enclosure)) {
+            return $value;
+        }
+
+        return $this->enclosure . str_replace($this->enclosure, str_repeat($this->enclosure, 2), $value) . $this->enclosure;
     }
 
     /**
