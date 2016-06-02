@@ -87,6 +87,20 @@ class CsvGrid extends Component
      * @see CsvFile
      */
     public $csvFileConfig = [];
+    /**
+     * @var array configuration for [[ExportResult]] instance created in process result.
+     *
+     * For example:
+     *
+     * ```php
+     * [
+     *     'forceArchive' => true
+     * ]
+     * ```
+     *
+     * @see ExportResult
+     */
+    public $resultConfig = [];
 
     /**
      * @var array|Formatter the formatter used to format model attribute values into displayable texts.
@@ -210,7 +224,7 @@ class CsvGrid extends Component
      */
     public function export()
     {
-        $result = new ExportResult();
+        $result = new ExportResult($this->resultConfig);
 
         $columnsInitialized = false;
 

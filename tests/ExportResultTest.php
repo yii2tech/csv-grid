@@ -56,7 +56,9 @@ class ExportResultTest extends TestCase
      */
     public function testArchiveResultFileName()
     {
-        $this->markTestSkipped('TODO: archive result file');
+        if (!class_exists('ZipArchive')) {
+            $this->markTestSkipped('PHP "zip" extension required');
+        }
 
         $exportResult = $this->createExportResult();
 
@@ -68,7 +70,50 @@ class ExportResultTest extends TestCase
         $file->writeRow(['second']);
         $file->close();
 
-        $this->assertNotEmpty($exportResult->getResultFileName());
+        $archiveFile = $exportResult->getResultFileName();
+        $this->assertNotEmpty($archiveFile);
+        $this->assertFileExists($archiveFile);
+    }
+
+    /**
+     * @depends testNewCsvFile
+     */
+    public function testArchiveResultFileNameCallback()
+    {
+        $exportResult = $this->createExportResult();
+        $exportResult->archiver = function ($files, $dirName) {
+            return 'mock.tar';
+        };
+
+        $file = $exportResult->newCsvFile();
+        $file->writeRow(['first']);
+        $file->close();
+
+        $file = $exportResult->newCsvFile();
+        $file->writeRow(['second']);
+        $file->close();
+
+        $archiveFile = $exportResult->getResultFileName();
+        $this->assertEquals('mock.tar', $archiveFile);
+    }
+
+    /**
+     * @depends testArchiveResultFileNameCallback
+     */
+    public function testForceArchive()
+    {
+        $exportResult = $this->createExportResult();
+        $exportResult->forceArchive = true;
+        $exportResult->archiver = function ($files, $dirName) {
+            return 'force.tar';
+        };
+
+        $file = $exportResult->newCsvFile();
+        $file->writeRow(['first']);
+        $file->close();
+
+        $archiveFile = $exportResult->getResultFileName();
+        $this->assertEquals('force.tar', $archiveFile);
     }
 
     /**

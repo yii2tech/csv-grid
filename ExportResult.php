@@ -8,8 +8,10 @@
 namespace yii2tech\csvgrid;
 
 use Yii;
+use yii\base\Exception;
 use yii\base\Object;
 use yii\helpers\FileHelper;
+use ZipArchive;
 
 /**
  * ExportResult represents CSV export result.
@@ -36,6 +38,23 @@ class ExportResult extends Object
      * @var CsvFile[] related CSV files.
      */
     public $csvFiles = [];
+    /**
+     * @var callable|null PHP callback, which should be used to archive result files.
+     * Signature:
+     *
+     * ```php
+     * function (array $files, string $dirName) {
+     *     return string // archive file name
+     * }
+     * ```
+     *
+     * If not set ZIP archive will be created using PHP 'zip' extension.
+     */
+    public $archiver;
+    /**
+     * @var boolean whether to always archive result, even if has only single file.
+     */
+    public $forceArchive = false;
 
     /**
      * @var string temporary files directory name
@@ -83,10 +102,18 @@ class ExportResult extends Object
         if ($this->_resultFileName === null) {
             if (!empty($this->csvFiles)) {
                 if (count($this->csvFiles) > 1) {
-                    // TODO archive results
+                    $files = [];
+                    foreach ($this->csvFiles as $csvFile) {
+                        $files[] = $csvFile->name;
+                    }
+                    $this->_resultFileName = $this->archiveFiles($files);
                 } else {
                     $csvFile = reset($this->csvFiles);
-                    $this->_resultFileName = $csvFile->name;
+                    if ($this->forceArchive) {
+                        $this->_resultFileName = $this->archiveFiles([$csvFile->name]);
+                    } else {
+                        $this->_resultFileName = $csvFile->name;
+                    }
                 }
             }
         }
@@ -186,5 +213,34 @@ class ExportResult extends Object
         $destinationPath = dirname($destinationFileName);
         FileHelper::createDirectory($destinationPath);
         return $destinationFileName;
+    }
+
+    /**
+     * Creates an archive files from given files.
+     * @param array $files source file names
+     * @return string archive file name
+     * @throws Exception on failure.
+     */
+    protected function archiveFiles($files)
+    {
+        if ($this->archiver !== null) {
+            return call_user_func($this->archiver, $files, $this->getDirName());
+        }
+
+        $archiveFileName = $this->getDirName() . DIRECTORY_SEPARATOR . $this->fileBaseName . '.zip';
+
+        $zip = new ZipArchive();
+        $zipStatus = $zip->open($archiveFileName, ZipArchive::CREATE);
+        if ($zipStatus !== true) {
+            throw new Exception('Unable to create ZIP archive: error#' . $zipStatus);
+        }
+
+        foreach ($files as $file) {
+            $zip->addFile($file, basename($file));
+        }
+
+        $zip->close();
+
+        return $archiveFileName;
     }
 }
