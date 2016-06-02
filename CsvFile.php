@@ -14,6 +14,18 @@ use yii\helpers\FileHelper;
 /**
  * CsvFile represents the CSV file.
  *
+ * Example:
+ *
+ * ```php
+ * use yii2tech\csvgrid\CsvFile;
+ *
+ * $csvFile = new CsvFile(['name' => '/path/to/file.csv']);
+ * foreach (Item::find()->all() as $item) {
+ *     $csvFile->writeRow($item->attributes);
+ * }
+ * $csvFile->close();
+ * ```
+ *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */

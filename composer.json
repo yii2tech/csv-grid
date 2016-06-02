@@ -1,7 +1,7 @@
 {
     "name": "yii2tech/csv-grid",
     "description": "Yii2 extension data export to CSV file",
-    "keywords": ["yii2", "csv", "export"],
+    "keywords": ["yii2", "csv", "export", "large data"],
     "type": "yii2-extension",
     "license": "BSD-3-Clause",
     "support": {

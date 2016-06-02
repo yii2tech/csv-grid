@@ -15,7 +15,40 @@ use yii\di\Instance;
 use yii\i18n\Formatter;
 
 /**
- * CsvGrid
+ * CsvGrid allows export of data into CSV files.
+ * It supports exporting of the [[\yii\data\DataProviderInterface]] and [[\yii\db\QueryInterface]] instances.
+ *
+ * Example:
+ *
+ * ```php
+ * use yii2tech\csvgrid\CsvGrid;
+ * use yii\data\ArrayDataProvider;
+ *
+ * $exporter = new CsvGrid([
+ *     'dataProvider' => new ArrayDataProvider([
+ *         'allModels' => [
+ *             [
+ *                 'name' => 'some name',
+ *                 'price' => '9879',
+ *             ],
+ *             [
+ *                 'name' => 'name 2',
+ *                 'price' => '79',
+ *             ],
+ *         ],
+ *     ]),
+ *     'columns' => [
+ *         [
+ *             'attribute' => 'name',
+ *         ],
+ *         [
+ *             'attribute' => 'price',
+ *             'format' => 'decimal',
+ *         ],
+ *     ],
+ * ]);
+ * $exporter->export()->saveAs('/path/to/file.csv');
+ * ```
  *
  * @property array|Formatter $formatter the formatter used to format model attribute values into displayable texts.
  *
@@ -66,9 +99,12 @@ class CsvGrid extends Component
     public $nullDisplay = '';
     /**
      * @var integer the maximum entries count allowed in single file.
+     * You may use this parameter to split large export results into several smaller files.
      *
      * For example: 'Open Office' and 'MS Excel 97-2003' allows maximum 65536 rows per CSV file,
      * 'MS Excel 2007' - 1048576.
+     *
+     * In case several files are generated during export the results will be archived into a single file.
      *
      * If this value is empty - no limit checking will be performed.
      */
