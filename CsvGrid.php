@@ -300,6 +300,8 @@ class CsvGrid extends Component
                     $csvFile = null;
                 }
             }
+
+            $this->gc();
         }
 
         if (is_object($csvFile)) {
@@ -416,5 +418,16 @@ class CsvGrid extends Component
             $cells[] = $column->renderDataCellContent($model, $key, $index);
         }
         return $cells;
+    }
+
+    /**
+     * Performs PHP memory garbage collection.
+     */
+    protected function gc()
+    {
+        if (!gc_enabled()) {
+            gc_enable();
+        }
+        gc_collect_cycles();
     }
 }
