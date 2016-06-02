@@ -214,6 +214,15 @@ class CsvGrid extends Component
 
         $columnsInitialized = false;
 
+        $maxEntriesPerFile = false;
+        if (!empty($this->maxEntriesPerFile)) {
+            $maxEntriesPerFile = $this->maxEntriesPerFile;
+            if ($this->showFooter) {
+                $maxEntriesPerFile--;
+            }
+        }
+
+        $csvFile = null;
         while (($data = $this->batchModels()) !== false) {
             list($models, $keys) = $data;
 
@@ -222,15 +231,6 @@ class CsvGrid extends Component
                 $columnsInitialized = true;
             }
 
-            $maxEntriesPerFile = false;
-            if (!empty($this->maxEntriesPerFile)) {
-                $maxEntriesPerFile = $this->maxEntriesPerFile;
-                if ($this->showFooter) {
-                    $maxEntriesPerFile--;
-                }
-            }
-
-            $csvFile = null;
             foreach ($models as $index => $model) {
                 if (!is_object($csvFile)) {
                     $csvFile = $result->newCsvFile($this->csvFileConfig);
@@ -247,15 +247,16 @@ class CsvGrid extends Component
                         $csvFile->writeRow($this->composeFooterRow());
                     }
                     $csvFile->close();
+                    $csvFile = null;
                 }
             }
+        }
 
-            if (is_object($csvFile)) {
-                if ($this->showFooter) {
-                    $csvFile->writeRow($this->composeFooterRow());
-                }
-                $csvFile->close();
+        if (is_object($csvFile)) {
+            if ($this->showFooter) {
+                $csvFile->writeRow($this->composeFooterRow());
             }
+            $csvFile->close();
         }
 
         return $result;
@@ -284,6 +285,7 @@ class CsvGrid extends Component
             /* @var $iterator \Iterator */
             $iterator = $this->batchInfo['queryIterator'];
             $iterator->next();
+
             if ($iterator->valid()) {
                 return [$iterator->current(), []];
             }
