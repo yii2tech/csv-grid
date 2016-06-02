@@ -73,11 +73,20 @@ class CsvGrid extends Component
      * If this value is empty - no limit checking will be performed.
      */
     public $maxEntriesPerFile;
-
     /**
-     * @var ExportResult export result instance.
+     * @var array configuration for [[CsvFile]] instances created in process.
+     * For example:
+     *
+     * ```php
+     * [
+     *     'rowDelimiter' => "\n",
+     *     'cellDelimiter' => ';',
+     * ]
+     * ```
+     *
+     * @see CsvFile
      */
-    protected $exportResult;
+    public $csvFileConfig = [];
 
     /**
      * @var array|Formatter the formatter used to format model attribute values into displayable texts.
@@ -86,9 +95,9 @@ class CsvGrid extends Component
      */
     private $_formatter;
     /**
-     * @var boolean indicates whether [[columns]] have been initialized or not.
+     * @var array|null internal iteration information
      */
-    private $columnsInitialized = false;
+    private $batchInfo;
 
 
     /**
@@ -158,8 +167,6 @@ class CsvGrid extends Component
             }
             $this->columns[$i] = $column;
         }
-
-        $this->columnsInitialized = true;
     }
 
     /**
@@ -197,63 +204,53 @@ class CsvGrid extends Component
         ]);
     }
 
+    /**
+     * Performs data export.
+     * @return ExportResult export result.
+     */
     public function export()
     {
-        $this->prepareExportResult();
+        $result = new ExportResult();
 
-        if ($this->query !== null && method_exists($this->query, 'batch')) {
-            foreach ($this->query->batch($this->batchSize) as $models) {
-                $this->exportModels($models, []);
+        $columnsInitialized = false;
+
+        while (($data = $this->batchModels()) !== false) {
+            list($models, $keys) = $data;
+
+            if (!$columnsInitialized) {
+                $this->initColumns(reset($models));
+                $columnsInitialized = true;
             }
-        } else {
-            $pagination = $this->dataProvider->getPagination();
-            if ($pagination === false) {
-                $this->exportModels($this->dataProvider->getModels(), $this->dataProvider->getKeys());
-            } else {
-                $page = 0;
-                while ($page < $pagination->pageCount) {
-                    $pagination->setPage($page);
-                    $this->dataProvider->prepare(true);
-                    $this->exportModels($this->dataProvider->getModels(), []);
-                }
-            }
-        }
 
-        return $this->exportResult;
-    }
-
-    /**
-     * Exports a list of models.
-     * @param array $models models to be exported
-     * @param array $keys model keys.
-     */
-    protected function exportModels($models, $keys)
-    {
-        if (!$this->columnsInitialized) {
-            $this->initColumns(reset($models));
-        }
-
-        $maxEntriesPerFile = false;
-        if (!empty($this->maxEntriesPerFile)) {
-            $maxEntriesPerFile = $this->maxEntriesPerFile;
-            if ($this->showFooter) {
-                $maxEntriesPerFile--;
-            }
-        }
-
-        $csvFile = null;
-        foreach ($models as $index => $model) {
-            if (!is_object($csvFile)) {
-                $csvFile = $this->exportResult->newCsvFile();
-                if ($this->showHeader) {
-                    $csvFile->writeRow($this->composeHeaderRow());
+            $maxEntriesPerFile = false;
+            if (!empty($this->maxEntriesPerFile)) {
+                $maxEntriesPerFile = $this->maxEntriesPerFile;
+                if ($this->showFooter) {
+                    $maxEntriesPerFile--;
                 }
             }
 
-            $key = isset($keys[$index]) ? $keys[$index] : $index;
-            $csvFile->writeRow($this->composeBodyRow($model, $key, $index));
+            $csvFile = null;
+            foreach ($models as $index => $model) {
+                if (!is_object($csvFile)) {
+                    $csvFile = $result->newCsvFile($this->csvFileConfig);
+                    if ($this->showHeader) {
+                        $csvFile->writeRow($this->composeHeaderRow());
+                    }
+                }
 
-            if ($maxEntriesPerFile !== false && $csvFile->entriesCount >= $maxEntriesPerFile) {
+                $key = isset($keys[$index]) ? $keys[$index] : $index;
+                $csvFile->writeRow($this->composeBodyRow($model, $key, $index));
+
+                if ($maxEntriesPerFile !== false && $csvFile->entriesCount >= $maxEntriesPerFile) {
+                    if ($this->showFooter) {
+                        $csvFile->writeRow($this->composeFooterRow());
+                    }
+                    $csvFile->close();
+                }
+            }
+
+            if (is_object($csvFile)) {
                 if ($this->showFooter) {
                     $csvFile->writeRow($this->composeFooterRow());
                 }
@@ -261,20 +258,70 @@ class CsvGrid extends Component
             }
         }
 
-        if (is_object($csvFile)) {
-            if ($this->showFooter) {
-                $csvFile->writeRow($this->composeFooterRow());
-            }
-            $csvFile->close();
-        }
+        return $result;
     }
 
     /**
-     * Prepares [[exportResult]] for the usage.
+     * Iterates over [[query]] or [[dataProvider]] returning data by batches.
+     * @return array|false data batch: first element - models list, second model keys list.
      */
-    protected function prepareExportResult()
+    protected function batchModels()
     {
-        $this->exportResult = new ExportResult();
+        if ($this->batchInfo === null) {
+            if ($this->query !== null && method_exists($this->query, 'batch')) {
+                $this->batchInfo = [
+                    'queryIterator' => $this->query->batch($this->batchSize)
+                ];
+            } else {
+                $this->batchInfo = [
+                    'pagination' => $this->dataProvider->getPagination(),
+                    'page' => 0
+                ];
+            }
+        }
+
+        if (isset($this->batchInfo['queryIterator'])) {
+            /* @var $iterator \Iterator */
+            $iterator = $this->batchInfo['queryIterator'];
+            $iterator->next();
+            if ($iterator->valid()) {
+                return [$iterator->current(), []];
+            }
+
+            $this->batchInfo = null;
+            return false;
+        }
+
+        if (isset($this->batchInfo['pagination'])) {
+            /* @var $pagination \yii\data\Pagination|boolean */
+            $pagination = $this->batchInfo['pagination'];
+            $page = $this->batchInfo['page'];
+
+            if ($pagination === false || $pagination->pageCount === 0) {
+                if ($page === 0) {
+                    $this->batchInfo['page']++;
+                    return [
+                        $this->dataProvider->getModels(),
+                        $this->dataProvider->getKeys()
+                    ];
+                }
+            } else {
+                if ($page < $pagination->pageCount) {
+                    $pagination->setPage($page);
+                    $this->dataProvider->prepare(true);
+                    $this->batchInfo['page']++;
+                    return [
+                        $this->dataProvider->getModels(),
+                        $this->dataProvider->getKeys()
+                    ];
+                }
+            }
+
+            $this->batchInfo = null;
+            return false;
+        }
+
+        return false;
     }
 
     /**

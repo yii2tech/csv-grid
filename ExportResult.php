@@ -9,11 +9,15 @@ namespace yii2tech\csvgrid;
 
 use Yii;
 use yii\base\Object;
+use yii\helpers\FileHelper;
 
 /**
- * ExportResult
+ * ExportResult represents CSV export result.
  *
- * @property string $dirName files directory name
+ * @see CsvGrid
+ *
+ * @property string $dirName temporary files directory name
+ * @property string $resultFileName result file name
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
@@ -21,7 +25,7 @@ use yii\base\Object;
 class ExportResult extends Object
 {
     /**
-     * @var string base path for the temporary files.
+     * @var string base path for the temporary directory and files.
      */
     public $basePath = '@runtime/csv-grid';
     /**
@@ -34,7 +38,7 @@ class ExportResult extends Object
     public $csvFiles = [];
 
     /**
-     * @var string files directory name
+     * @var string temporary files directory name
      */
     private $_dirName;
     /**
@@ -42,6 +46,15 @@ class ExportResult extends Object
      */
     private $_resultFileName;
 
+
+    /**
+     * Destructor.
+     * Makes sure the temporary directory removed.
+     */
+    public function __destruct()
+    {
+        $this->delete();
+    }
 
     /**
      * @return string files directory name
@@ -82,17 +95,96 @@ class ExportResult extends Object
 
     /**
      * Creates new CSV file in result set.
+     * @param array $config file instance configuration.
      * @return CsvFile file instance.
      */
-    public function newCsvFile()
+    public function newCsvFile($config = [])
     {
         $selfFileName = $this->fileBaseName . '-' . str_pad((count($this->csvFiles) + 1), 3, '0', STR_PAD_LEFT);
 
-        $file = new CsvFile();
+        $file = new CsvFile($config);
         $file->name = $this->getDirName() . DIRECTORY_SEPARATOR . $selfFileName . '.csv';
 
         $this->csvFiles[] = $file;
 
         return $file;
+    }
+
+    /**
+     * Deletes associated directory with all internal files.
+     * @return boolean whether file has been deleted.
+     */
+    public function delete()
+    {
+        if (!empty($this->_dirName)) {
+            $this->csvFiles = []; // allow running destructor of file objects first
+            FileHelper::removeDirectory($this->_dirName);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Copies result file into another location.
+     * @param string $destinationFileName destination file name (may content path alias).
+     * @return boolean whether operation was successful.
+     */
+    public function copy($destinationFileName)
+    {
+        $destinationFileName = $this->prepareDestinationFileName($destinationFileName);
+        return copy($this->getResultFileName(), $destinationFileName);
+    }
+
+    /**
+     * Moves result file into another location.
+     * @param string $destinationFileName destination file name (may content path alias).
+     * @return boolean whether operation was successful.
+     */
+    public function move($destinationFileName)
+    {
+        $destinationFileName = $this->prepareDestinationFileName($destinationFileName);
+        $result = rename($this->getResultFileName(), $destinationFileName);
+        $this->delete();
+        return $result;
+    }
+
+    /**
+     * Saves this file.
+     * @param string $file destination file name (may content path alias).
+     * @param boolean $deleteTempFile whether to delete associated temp file or not.
+     * @return boolean whether operation was successful.
+     */
+    public function saveAs($file, $deleteTempFile = true)
+    {
+        if ($deleteTempFile) {
+            return $this->move($file);
+        }
+        return $this->copy($file);
+    }
+
+    /**
+     * Prepares response for sending a result file to the browser.
+     * Note: this method works only while running web application.
+     * @param string $name the file name shown to the user. If null, it will be determined from [[tempName]].
+     * @param array $options additional options for sending the file. See [[\yii\web\Response::sendFile()]] for more details.
+     * @return \yii\web\Response application response instance.
+     */
+    public function send($name = null, $options = [])
+    {
+        return Yii::$app->getResponse()->sendFile($this->getResultFileName(), $name, $options);
+    }
+
+    /**
+     * Prepares raw destination file name for the file copy/move operation:
+     * resolves path alias and creates missing directories.
+     * @param string $destinationFileName destination file name
+     * @return string real destination file name
+     */
+    protected function prepareDestinationFileName($destinationFileName)
+    {
+        $destinationFileName = Yii::getAlias($destinationFileName);
+        $destinationPath = dirname($destinationFileName);
+        FileHelper::createDirectory($destinationPath);
+        return $destinationFileName;
     }
 }
