@@ -151,7 +151,7 @@ foreach ($result->csvFiles as $csvFile) {
 
 ## Archiving results <span id="archiving-results"></span>
 
-Export result is archived automatically if it contains more then 1 CSV file. However you may enforce archiving of the
+Export result is archived automatically, if it contains more then one CSV file. However you may enforce archiving of the
 export result via [[\yii2tech\csvgrid\ExportResult::forceArchive]]:
 
 ```php
@@ -167,8 +167,8 @@ $exporter = new CsvGrid([
 $exporter->export()->saveAs('/path/to/archive-file.zip'); // output ZIP archive!
 ```
 
-**Heads up!** By default [[\yii2tech\csvgrid\ExportResult]] uses PHP 'zip' extension for the archive creating.
-Thus is will fail if this extension is not present in your environment.
+**Heads up!** By default [[\yii2tech\csvgrid\ExportResult]] uses [PHP Zip](http://php.net/manual/en/book.zip.php) extension for the archive creating.
+Thus is will fail, if this extension is not present in your environment.
 
 You can setup your own archive method via [[\yii2tech\csvgrid\ExportResult::archiver]].
 For example:
@@ -199,7 +199,7 @@ $exporter->export()->saveAs('/path/to/items.tar');
 ## Customize output format <span id="customize-output-format"></span>
 
 Although CSV dictates particular data format (each value quoted, values separated by comma, lines separated by line break),
-some cases require it changing. For example: you may need to separate values using semicolon, or may want to create
+some cases require its changing. For example: you may need to separate values using semicolon, or may want to create
 TSV (tabular separated values) file instead CSV.
 You may customize format entries using [[\yii2tech\csvgrid\CsvGrid::csvFileConfig]]:
 
@@ -215,5 +215,5 @@ $exporter = new CsvGrid([
         'enclosure' => '',
     ],
 ]);
-$exporter->export()->saveAs('/path/to/file.csv');
+$exporter->export()->saveAs('/path/to/file.txt');
 ```
