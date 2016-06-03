@@ -168,7 +168,7 @@ $exporter->export()->saveAs('/path/to/archive-file.zip'); // output ZIP archive!
 ```
 
 **Heads up!** By default [[\yii2tech\csvgrid\ExportResult]] uses [PHP Zip](http://php.net/manual/en/book.zip.php) extension for the archive creating.
-Thus is will fail, if this extension is not present in your environment.
+Thus it will fail, if this extension is not present in your environment.
 
 You can setup your own archive method via [[\yii2tech\csvgrid\ExportResult::archiver]].
 For example:
