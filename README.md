@@ -1,4 +1,4 @@
-CSV data export extension for Yii2
+CSV Data Export extension for Yii2
 ==================================
 
 This extension provides ability to export data to CSV file.
