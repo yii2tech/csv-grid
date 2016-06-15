@@ -311,6 +311,17 @@ class CsvGrid extends Component
             $csvFile->close();
         }
 
+        if (empty($result->csvFiles)) {
+            $csvFile = $result->newCsvFile($this->csvFileConfig);
+            if ($this->showHeader) {
+                $csvFile->writeRow($this->composeHeaderRow());
+            }
+            if ($this->showFooter) {
+                $csvFile->writeRow($this->composeFooterRow());
+            }
+            $csvFile->close();
+        }
+
         return $result;
     }
 

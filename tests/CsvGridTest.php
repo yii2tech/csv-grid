@@ -136,4 +136,21 @@ class CsvGridTest extends TestCase
         $this->assertTrue($result instanceof ExportResult);
         $this->assertCount(2, $result->csvFiles, 'Wrong number of result files.');
     }
+
+    /**
+     * @depends testExport
+     */
+    public function testEmptyResult()
+    {
+        $grid = $this->createCsvGrid([
+            'maxEntriesPerFile' => 2,
+            'dataProvider' => new ArrayDataProvider([
+                'allModels' => [],
+            ])
+        ]);
+
+        $result = $grid->export();
+        $this->assertTrue($result instanceof ExportResult);
+        $this->assertCount(1, $result->csvFiles, 'Wrong number of result files.');
+    }
 }
