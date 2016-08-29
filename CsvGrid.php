@@ -73,7 +73,22 @@ class CsvGrid extends Component
      */
     public $batchSize = 100;
     /**
-     * @var array|Column[]
+     * @var array|Column[] grid column configuration. Each array element represents the configuration
+     * for one particular grid column. For example:
+     *
+     * ```php
+     * [
+     *     ['class' => SerialColumn::className()],
+     *     [
+     *         'class' => DataColumn::className(), // this line is optional
+     *         'attribute' => 'name',
+     *         'format' => 'text',
+     *         'header' => 'Name',
+     *     ],
+     * ]
+     * ```
+     *
+     * If a column is of class [[DataColumn]], the "class" element can be omitted.
      */
     public $columns = [];
     /**
@@ -273,6 +288,7 @@ class CsvGrid extends Component
         }
 
         $csvFile = null;
+        $rowIndex = 0;
         while (($data = $this->batchModels()) !== false) {
             list($models, $keys) = $data;
 
@@ -290,7 +306,8 @@ class CsvGrid extends Component
                 }
 
                 $key = isset($keys[$index]) ? $keys[$index] : $index;
-                $csvFile->writeRow($this->composeBodyRow($model, $key, $index));
+                $csvFile->writeRow($this->composeBodyRow($model, $key, $rowIndex));
+                $rowIndex++;
 
                 if ($maxEntriesPerFile !== false && $csvFile->entriesCount >= $maxEntriesPerFile) {
                     if ($this->showFooter) {

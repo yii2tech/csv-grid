@@ -1,6 +1,12 @@
 Yii 2 CSV Data Export extension Change Log
 ==========================================
 
+1.0.2 under development
+-----------------------
+
+- Enh #2: Added `SerialColumn` column (klimov-paul)
+
+
 1.0.1, June 28, 2016
 --------------------
 
