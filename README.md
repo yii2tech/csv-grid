@@ -112,6 +112,28 @@ $exporter = new CsvGrid([
 $exporter->export()->saveAs('/path/to/file.csv');
 ```
 
+While running web application you can use [[\yii2tech\csvgrid\ExportResult::send()]] method to send a result file to
+the browser through download dialog:
+
+```php
+use yii2tech\csvgrid\CsvGrid;
+use yii\data\ActiveDataProvider;
+use yii\web\Controller;
+
+class ItemController extends Controller
+{
+    public function actionExport()
+    {
+        $exporter = new CsvGrid([
+            'dataProvider' => new ActiveDataProvider([
+                'query' => Item::find(),
+            ]),
+        ]);
+        return $exporter->export()->send('items.csv');
+    }
+}
+```
+
 
 ## Splitting result into several files <span id="splitting-result-into-several-files"></span>
 
@@ -198,6 +220,29 @@ $exporter = new CsvGrid([
     ],
 ]);
 $exporter->export()->saveAs('/path/to/items.tar');
+```
+
+While sending file to the browser via [[\yii2tech\csvgrid\ExportResult::send()]] there is no need to check if result
+is archived or not as correct file extension will be append automatically:
+
+```php
+use yii2tech\csvgrid\CsvGrid;
+use yii\data\ActiveDataProvider;
+use yii\web\Controller;
+
+class ItemController extends Controller
+{
+    public function actionExport()
+    {
+        $exporter = new CsvGrid([
+            'dataProvider' => new ActiveDataProvider([
+                'query' => Item::find(), // over 1 million records
+                'maxEntriesPerFile' => 60000,
+            ]),
+        ]);
+        return $exporter->export()->send('items.csv'); // displays dialog for saving `items.csv.zip`!
+    }
+}
 ```
 
 
