@@ -9,7 +9,7 @@ namespace yii2tech\csvgrid;
 
 use Yii;
 use yii\base\Exception;
-use yii\base\Object;
+use yii\base\BaseObject;
 use yii\helpers\FileHelper;
 use ZipArchive;
 
@@ -24,7 +24,7 @@ use ZipArchive;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */
-class ExportResult extends Object
+class ExportResult extends BaseObject
 {
     /**
      * @var string base path for the temporary directory and files.
@@ -52,7 +52,7 @@ class ExportResult extends Object
      */
     public $archiver;
     /**
-     * @var boolean whether to always archive result, even if has only single file.
+     * @var bool whether to always archive result, even if has only single file.
      */
     public $forceArchive = false;
 
@@ -139,7 +139,7 @@ class ExportResult extends Object
 
     /**
      * Deletes associated directory with all internal files.
-     * @return boolean whether file has been deleted.
+     * @return bool whether file has been deleted.
      */
     public function delete()
     {
@@ -154,7 +154,7 @@ class ExportResult extends Object
     /**
      * Copies result file into another location.
      * @param string $destinationFileName destination file name (may content path alias).
-     * @return boolean whether operation was successful.
+     * @return bool whether operation was successful.
      */
     public function copy($destinationFileName)
     {
@@ -165,7 +165,7 @@ class ExportResult extends Object
     /**
      * Moves result file into another location.
      * @param string $destinationFileName destination file name (may content path alias).
-     * @return boolean whether operation was successful.
+     * @return bool whether operation was successful.
      */
     public function move($destinationFileName)
     {
@@ -178,8 +178,8 @@ class ExportResult extends Object
     /**
      * Saves this file.
      * @param string $file destination file name (may content path alias).
-     * @param boolean $deleteTempFile whether to delete associated temp file or not.
-     * @return boolean whether operation was successful.
+     * @param bool $deleteTempFile whether to delete associated temp file or not.
+     * @return bool whether operation was successful.
      */
     public function saveAs($file, $deleteTempFile = true)
     {

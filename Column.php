@@ -7,8 +7,7 @@
 
 namespace yii2tech\csvgrid;
 
-use Closure;
-use yii\base\Object;
+use yii\base\BaseObject;
 
 /**
  * Column is the base class of all [[CsvGrid]] column classes.
@@ -16,7 +15,7 @@ use yii\base\Object;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */
-class Column extends Object
+class Column extends BaseObject
 {
     /**
      * @var CsvGrid the exporter object that owns this column.
@@ -38,7 +37,7 @@ class Column extends Object
      */
     public $content;
     /**
-     * @var boolean whether this column is visible. Defaults to true.
+     * @var bool whether this column is visible. Defaults to true.
      */
     public $visible = true;
 
@@ -69,7 +68,7 @@ class Column extends Object
      * Renders the data cell content.
      * @param mixed $model the data model
      * @param mixed $key the key associated with the data model
-     * @param integer $index the zero-based index of the data model among the models array returned by [[GridView::dataProvider]].
+     * @param int $index the zero-based index of the data model among the models array returned by [[GridView::dataProvider]].
      * @return string the rendering result
      */
     public function renderDataCellContent($model, $key, $index)

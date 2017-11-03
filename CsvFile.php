@@ -8,7 +8,7 @@
 namespace yii2tech\csvgrid;
 
 use yii\base\Exception;
-use yii\base\Object;
+use yii\base\BaseObject;
 use yii\helpers\FileHelper;
 
 /**
@@ -29,7 +29,7 @@ use yii\helpers\FileHelper;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */
-class CsvFile extends Object
+class CsvFile extends BaseObject
 {
     /**
      * @var string the path of the file.
@@ -49,7 +49,7 @@ class CsvFile extends Object
      */
     public $enclosure = '"';
     /**
-     * @var integer the count of entries written into the file.
+     * @var int the count of entries written into the file.
      */
     public $entriesCount = 0;
 
@@ -71,7 +71,7 @@ class CsvFile extends Object
     /**
      * Opens the related file for writing.
      * @throws Exception on failure.
-     * @return boolean success.
+     * @return bool success.
      */
     public function open()
     {
@@ -87,7 +87,7 @@ class CsvFile extends Object
 
     /**
      * Close the related file if it was opened.
-     * @return boolean success.
+     * @return bool success.
      */
     public function close()
     {
@@ -100,7 +100,7 @@ class CsvFile extends Object
 
     /**
      * Deletes the associated file.
-     * @return boolean success.
+     * @return bool success.
      */
     public function delete()
     {
@@ -114,7 +114,7 @@ class CsvFile extends Object
     /**
      * Writes the given row data into the file in CSV format.
      * @param mixed $rowData raw data can be array or object.
-     * @return integer the number of bytes written.
+     * @return int the number of bytes written.
      */
     public function writeRow($rowData)
     {
@@ -163,7 +163,7 @@ class CsvFile extends Object
     /**
      * Writes the given content into the file.
      * @param string $content content to be written.
-     * @return integer the number of bytes written.
+     * @return int the number of bytes written.
      * @throws Exception on failure.
      */
     protected function writeContent($content)

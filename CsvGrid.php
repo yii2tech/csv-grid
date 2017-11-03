@@ -68,7 +68,7 @@ class CsvGrid extends Component
      */
     public $query;
     /**
-     * @var integer the number of records to be fetched in each batch.
+     * @var int the number of records to be fetched in each batch.
      * This property takes effect only in case of [[query]] usage.
      */
     public $batchSize = 100;
@@ -92,11 +92,11 @@ class CsvGrid extends Component
      */
     public $columns = [];
     /**
-     * @var boolean whether to show the header section of the sheet.
+     * @var bool whether to show the header section of the sheet.
      */
     public $showHeader = true;
     /**
-     * @var boolean whether to show the footer section of the sheet.
+     * @var bool whether to show the footer section of the sheet.
      */
     public $showFooter = false;
     /**
@@ -113,7 +113,7 @@ class CsvGrid extends Component
      */
     public $nullDisplay = '';
     /**
-     * @var integer the maximum entries count allowed in single file.
+     * @var int the maximum entries count allowed in single file.
      * You may use this parameter to split large export results into several smaller files.
      *
      * For example: 'Open Office' and 'MS Excel 97-2003' allows maximum 65536 rows per CSV file,
@@ -375,7 +375,7 @@ class CsvGrid extends Component
         }
 
         if (isset($this->batchInfo['pagination'])) {
-            /* @var $pagination \yii\data\Pagination|boolean */
+            /* @var $pagination \yii\data\Pagination|bool */
             $pagination = $this->batchInfo['pagination'];
             $page = $this->batchInfo['page'];
 
@@ -436,7 +436,7 @@ class CsvGrid extends Component
      * Composes body row contents.
      * @param mixed $model the data model
      * @param mixed $key the key associated with the data model
-     * @param integer $index the zero-based index of the data model among the models array returned by [[GridView::dataProvider]].
+     * @param int $index the zero-based index of the data model among the models array returned by [[GridView::dataProvider]].
      * @return array cell contents.
      */
     protected function composeBodyRow($model, $key, $index)

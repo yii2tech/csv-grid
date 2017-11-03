@@ -27,13 +27,13 @@ namespace yii2tech\csvgrid;
 class SerialColumn extends Column
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public $header = '#';
 
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function renderDataCellContent($model, $key, $index)
     {
