@@ -52,6 +52,19 @@ class CsvFile extends BaseObject
      * @var int the count of entries written into the file.
      */
     public $entriesCount = 0;
+    /**
+     * @var bool|string whether to write Byte Order Mark (BOM) at the beginning of the file.
+     * BOM might be necessary for the unicode-encoded file to be correctly displayed at some programs.
+     * Default is `false` meaning the BOM writing is disabled. If set to `true` BOM for UTF-8 encoding will be written.
+     * This field can be specified as a string, which holds exact BOM to be written. For example:
+     *
+     * ```php
+     * pack('CCC', 0xfe, 0xff); // UTF-16 (BE)
+     * ```
+     *
+     * @since 1.0.2
+     */
+    public $writeBom = false;
 
     /**
      * @var resource file resource handler.
@@ -118,6 +131,10 @@ class CsvFile extends BaseObject
      */
     public function writeRow($rowData)
     {
+        if ($this->writeBom !== false && $this->entriesCount === 0) {
+            $bom = is_string($this->writeBom) ? $this->writeBom : pack('CCC', 0xef, 0xbb, 0xbf);
+            $this->writeContent($bom);
+        }
         $result = $this->writeContent($this->composeRowContent($rowData));
         $this->entriesCount++;
         return $result;

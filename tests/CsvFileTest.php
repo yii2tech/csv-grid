@@ -50,4 +50,42 @@ class CsvFileTest extends TestCase
         $expectedContent = '"""quoted"""';
         $this->assertEquals($expectedContent, file_get_contents($csvFile->name), 'Invalid file content');
     }
+
+    /**
+     * @depends testWriteRow
+     */
+    public function testWriteBom()
+    {
+        $csvFile = $this->createCsvFile();
+        $csvFile->writeBom = true;
+
+        $csvFile->writeRow([
+            'cell-1',
+            'cell-2',
+        ]);
+        $csvFile->writeRow([
+            'cell-1',
+            'cell-2',
+        ]);
+        $csvFile->close();
+
+        $expectedContent = pack('CCC', 0xef, 0xbb, 0xbf) . '"cell-1","cell-2"' . "\r\n" . '"cell-1","cell-2"';
+        $this->assertEquals($expectedContent, file_get_contents($csvFile->name), 'Invalid file content');
+
+        $csvFile = $this->createCsvFile();
+        $csvFile->writeBom = 'BOM';
+
+        $csvFile->writeRow([
+            'cell-1',
+            'cell-2',
+        ]);
+        $csvFile->writeRow([
+            'cell-1',
+            'cell-2',
+        ]);
+        $csvFile->close();
+
+        $expectedContent = 'BOM' . '"cell-1","cell-2"' . "\r\n" . '"cell-1","cell-2"';
+        $this->assertEquals($expectedContent, file_get_contents($csvFile->name), 'Invalid file content');
+    }
 }

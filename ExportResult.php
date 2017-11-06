@@ -129,7 +129,8 @@ class ExportResult extends BaseObject
     {
         $selfFileName = $this->fileBaseName . '-' . str_pad((count($this->csvFiles) + 1), 3, '0', STR_PAD_LEFT);
 
-        $file = new CsvFile($config);
+        /* @var $file CsvFile */
+        $file = Yii::createObject(array_merge(['class' => CsvFile::className()], $config));
         $file->name = $this->getDirName() . DIRECTORY_SEPARATOR . $selfFileName . '.csv';
 
         $this->csvFiles[] = $file;

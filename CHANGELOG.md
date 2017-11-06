@@ -6,6 +6,7 @@ Yii 2 CSV Data Export extension Change Log
 
 - Bug: Usage of deprecated `yii\base\Object` changed to `yii\base\BaseObject` allowing compatibility with PHP 7.2 (klimov-paul)
 - Enh #2: Added `SerialColumn` column (klimov-paul)
+- Enh #11: Added `CsvFile::$writeBom` allowing to automatically write BOM for generated files (wcoc, klimov-paul)
 
 
 1.0.1, June 28, 2016
