@@ -55,7 +55,7 @@ class DataColumn extends Column
      * the [[GridView]]. Default format is "text" which will format the value as an HTML-encoded plain text when
      * [[\yii\i18n\Formatter]] is used as the [[GridView::$formatter|formatter]] of the GridView.
      */
-    public $format = 'text';
+    public $format = 'raw';
 
 
     /**
