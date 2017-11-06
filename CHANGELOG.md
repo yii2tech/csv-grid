@@ -1,7 +1,7 @@
 Yii 2 CSV Data Export extension Change Log
 ==========================================
 
-1.0.2 under development
+1.0.2, November 6, 2017
 -----------------------
 
 - Bug: Usage of deprecated `yii\base\Object` changed to `yii\base\BaseObject` allowing compatibility with PHP 7.2 (klimov-paul)
