@@ -89,6 +89,21 @@ class CsvGridTest extends TestCase
     /**
      * @depends testExport
      */
+    public function testCustomExportResult()
+    {
+        $grid = $this->createCsvGrid([
+            'resultConfig' => [
+                'class' => CustomExportResult::className(),
+            ]
+        ]);
+
+        $result = $grid->export();
+        $this->assertTrue($result instanceof CustomExportResult);
+    }
+
+    /**
+     * @depends testExport
+     */
     public function testExportQuery()
     {
         $this->setupTestDbData();
@@ -166,4 +181,8 @@ class CsvGridTest extends TestCase
         $this->assertTrue($result instanceof ExportResult);
         $this->assertCount(1, $result->csvFiles, 'Wrong number of result files.');
     }
+}
+
+class CustomExportResult extends ExportResult
+{
 }

@@ -272,10 +272,14 @@ class CsvGrid extends Component
     /**
      * Performs data export.
      * @return ExportResult export result.
+     * @throws InvalidConfigException if invalid [[resultConfig]] value.
      */
     public function export()
     {
-        $result = new ExportResult($this->resultConfig);
+        /** @var ExportResult $result */
+        $result = Yii::createObject(array_merge([
+            'class' => ExportResult::className(),
+        ], $this->resultConfig));
 
         $columnsInitialized = false;
 

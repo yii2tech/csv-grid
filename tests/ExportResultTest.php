@@ -10,6 +10,7 @@ class ExportResultTest extends TestCase
 {
     /**
      * @return ExportResult export result instance
+     * @throws \yii\base\InvalidConfigException
      */
     protected function createExportResult()
     {

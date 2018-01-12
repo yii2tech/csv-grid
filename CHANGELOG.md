@@ -1,6 +1,12 @@
 Yii 2 CSV Data Export extension Change Log
 ==========================================
 
+1.0.3 under development
+-----------------------
+
+- Enh #15: Added ability to use custom export result class (danielkesselberg)
+
+
 1.0.2, November 6, 2017
 -----------------------
 
