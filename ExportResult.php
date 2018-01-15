@@ -11,6 +11,7 @@ use Yii;
 use yii\base\Exception;
 use yii\base\BaseObject;
 use yii\helpers\FileHelper;
+use yii\web\Response;
 use ZipArchive;
 
 /**
@@ -195,11 +196,13 @@ class ExportResult extends BaseObject
      * Note: this method works only while running web application.
      * @param string $name the file name shown to the user. If null, it will be determined from [[tempName]].
      * @param array $options additional options for sending the file. See [[\yii\web\Response::sendFile()]] for more details.
-     * @return \yii\web\Response application response instance.
+     * @return Response application response instance.
      */
     public function send($name = null, $options = [])
     {
-        return Yii::$app->getResponse()->sendFile($this->getResultFileName(), $name, $options);
+        $response = Yii::$app->getResponse();
+        $response->on(Response::EVENT_AFTER_SEND, [$this, 'delete']);
+        return $response->sendFile($this->getResultFileName(), $name, $options);
     }
 
     /**
