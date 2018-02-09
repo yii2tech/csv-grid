@@ -1,7 +1,7 @@
 Yii 2 CSV Data Export extension Change Log
 ==========================================
 
-1.0.3 under development
+1.0.3, February 9, 2018
 -----------------------
 
 - Bug #13: Fixed result file is not deleted after `ExportResult::send()` at some environment (danielkesselberg, klimov-paul)
