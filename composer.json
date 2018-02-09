@@ -26,7 +26,7 @@
         }
     ],
     "autoload": {
-        "psr-4": { "yii2tech\\csvgrid\\": "" }
+        "psr-4": { "yii2tech\\csvgrid\\": "src" }
     },
     "extra": {
         "branch-alias": {
