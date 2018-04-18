@@ -1,8 +1,8 @@
 Yii 2 CSV Data Export extension Change Log
 ==========================================
 
-1.0.4 under development
------------------------
+1.0.4, April 18, 2018
+---------------------
 
 - Bug #18: Fixed `CsvGrid::createDataColumn()` sets column format to 'text' instead of 'raw' (klimov-paul)
 
