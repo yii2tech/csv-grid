@@ -68,7 +68,7 @@ class Column extends BaseObject
      * Renders the data cell content.
      * @param mixed $model the data model
      * @param mixed $key the key associated with the data model
-     * @param int $index the zero-based index of the data model among the models array returned by [[GridView::dataProvider]].
+     * @param int $index the zero-based index of the data model among the models array returned by [[CsvGrid::$dataProvider]].
      * @return string the rendering result
      */
     public function renderDataCellContent($model, $key, $index)

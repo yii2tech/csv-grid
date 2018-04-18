@@ -99,7 +99,7 @@ $exporter->export()->saveAs('/path/to/file.csv');
 In case of [[\yii\db\QueryInterface]] usage, `CsvGrid` will attempt to use `batch()` method, if it present in the query
 class (for example in case [[\yii\db\Query]] or [[\yii\db\ActiveQuery]] usage). If `batch()` method is not available -
 [[yii\data\ActiveDataProvider]] instance will be automatically created around given query.
-You can control batch size via [[\yii2tech\csvgrid\CsvGrid::batchSize]]:
+You can control batch size via [[\yii2tech\csvgrid\CsvGrid::$batchSize]]:
 
 ```php
 use yii2tech\csvgrid\CsvGrid;
@@ -142,7 +142,7 @@ This may come in handy in case you are planning to use result CSV files with pro
 maximum rows inside single file. For example: 'Open Office' and 'MS Excel 97-2003' allows maximum 65536 rows
 per CSV file, 'MS Excel 2007' - 1048576.
 
-You may use [[\yii2tech\csvgrid\CsvGrid::maxEntriesPerFile]] to restrict maximum rows in the single result file.
+You may use [[\yii2tech\csvgrid\CsvGrid::$maxEntriesPerFile]] to restrict maximum rows in the single result file.
 In case the export result produce more then one CSV file - these files will be automatically archived into the single
 archive file. For example:
 
@@ -158,7 +158,7 @@ $exporter->export()->saveAs('/path/to/archive-file.zip'); // output ZIP archive!
 ```
 
 Note: you are not forced to receive multiple files result as a single archive. You can use
-[[\yii2tech\csvgrid\ExportResult::csvFiles]] to manually iterate over created CSV files and process them as you like:
+[[\yii2tech\csvgrid\ExportResult::$csvFiles]] to manually iterate over created CSV files and process them as you like:
 
 ```php
 use yii2tech\csvgrid\CsvGrid;
@@ -178,8 +178,8 @@ foreach ($result->csvFiles as $csvFile) {
 
 ## Archiving results <span id="archiving-results"></span>
 
-Export result is archived automatically, if it contains more then one CSV file. However you may enforce archiving of the
-export result via [[\yii2tech\csvgrid\ExportResult::forceArchive]]:
+Export result is archived automatically, if it contains more then one CSV file. However, you may enforce archiving of the
+export result via [[\yii2tech\csvgrid\ExportResult::$forceArchive]]:
 
 ```php
 use yii2tech\csvgrid\CsvGrid;
@@ -197,7 +197,7 @@ $exporter->export()->saveAs('/path/to/archive-file.zip'); // output ZIP archive!
 **Heads up!** By default [[\yii2tech\csvgrid\ExportResult]] uses [PHP Zip](http://php.net/manual/en/book.zip.php) extension for the archive creating.
 Thus it will fail, if this extension is not present in your environment.
 
-You can setup your own archive method via [[\yii2tech\csvgrid\ExportResult::archiver]].
+You can setup your own archive method via [[\yii2tech\csvgrid\ExportResult::$archiver]].
 For example:
 
 ```php
@@ -251,7 +251,7 @@ class ItemController extends Controller
 Although CSV dictates particular data format (each value quoted, values separated by comma, lines separated by line break),
 some cases require its changing. For example: you may need to separate values using semicolon, or may want to create
 TSV (tabular separated values) file instead CSV.
-You may customize format entries using [[\yii2tech\csvgrid\CsvGrid::csvFileConfig]]:
+You may customize format entries using [[\yii2tech\csvgrid\CsvGrid::$csvFileConfig]]:
 
 ```php
 use yii2tech\csvgrid\CsvGrid;

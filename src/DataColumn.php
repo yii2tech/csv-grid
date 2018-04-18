@@ -31,7 +31,7 @@ class DataColumn extends Column
     /**
      * @var string label to be displayed in the [[header|header cell]] and also to be used as the sorting
      * link label when sorting is enabled for this column.
-     * If it is not set and the models provided by the GridViews data provider are instances
+     * If it is not set and the models provided by the CsvGrid's data provider are instances
      * of [[\yii\db\ActiveRecord]], the label will be determined using [[\yii\db\ActiveRecord::getAttributeLabel()]].
      * Otherwise [[\yii\helpers\Inflector::camel2words()]] will be used to get a label.
      */
@@ -51,9 +51,9 @@ class DataColumn extends Column
     public $value;
     /**
      * @var string|array in which format should the value of each data model be displayed as (e.g. `"raw"`, `"text"`, `"html"`,
-     * `['date', 'php:Y-m-d']`). Supported formats are determined by the [[GridView::formatter|formatter]] used by
-     * the [[GridView]]. Default format is "text" which will format the value as an HTML-encoded plain text when
-     * [[\yii\i18n\Formatter]] is used as the [[GridView::$formatter|formatter]] of the GridView.
+     * `['date', 'php:Y-m-d']`). Supported formats are determined by the [[CsvGrid::$formatter|formatter]] used by
+     * the [[CsvGrid]]. Default format is "text" which will format the value as an HTML-encoded plain text when
+     * [[\yii\i18n\Formatter]] is used as the [[CsvGrid::$formatter|formatter]] of the CsvGrid.
      */
     public $format = 'raw';
 
@@ -94,7 +94,7 @@ class DataColumn extends Column
      * Returns the data cell value.
      * @param mixed $model the data model
      * @param mixed $key the key associated with the data model
-     * @param int $index the zero-based index of the data model among the models array returned by [[GridView::dataProvider]].
+     * @param int $index the zero-based index of the data model among the models array returned by [[CsvGrid::$dataProvider]].
      * @return string the data cell value
      */
     public function getDataCellValue($model, $key, $index)
@@ -102,9 +102,8 @@ class DataColumn extends Column
         if ($this->value !== null) {
             if (is_string($this->value)) {
                 return ArrayHelper::getValue($model, $this->value);
-            } else {
-                return call_user_func($this->value, $model, $key, $index, $this);
             }
+            return call_user_func($this->value, $model, $key, $index, $this);
         } elseif ($this->attribute !== null) {
             return ArrayHelper::getValue($model, $this->attribute);
         }
@@ -122,8 +121,8 @@ class DataColumn extends Column
                 return $this->grid->nullDisplay;
             }
             return $this->grid->formatter->format($value, $this->format);
-        } else {
-            return parent::renderDataCellContent($model, $key, $index);
         }
+
+        return parent::renderDataCellContent($model, $key, $index);
     }
 }

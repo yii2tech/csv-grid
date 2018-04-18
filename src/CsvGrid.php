@@ -440,7 +440,7 @@ class CsvGrid extends Component
      * Composes body row contents.
      * @param mixed $model the data model
      * @param mixed $key the key associated with the data model
-     * @param int $index the zero-based index of the data model among the models array returned by [[GridView::dataProvider]].
+     * @param int $index the zero-based index of the data model among the models array returned by [[CsvGrid::$dataProvider]].
      * @return array cell contents.
      */
     protected function composeBodyRow($model, $key, $index)
