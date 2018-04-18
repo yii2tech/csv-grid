@@ -264,7 +264,7 @@ class CsvGrid extends Component
             'class' => DataColumn::className(),
             'grid' => $this,
             'attribute' => $matches[1],
-            'format' => isset($matches[3]) ? $matches[3] : 'text',
+            'format' => isset($matches[3]) ? $matches[3] : 'raw',
             'label' => isset($matches[5]) ? $matches[5] : null,
         ]);
     }

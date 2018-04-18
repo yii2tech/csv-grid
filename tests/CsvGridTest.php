@@ -7,7 +7,9 @@ use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\i18n\Formatter;
 use yii2tech\csvgrid\CsvGrid;
+use yii2tech\csvgrid\DataColumn;
 use yii2tech\csvgrid\ExportResult;
+use yii2tech\csvgrid\SerialColumn;
 
 class CsvGridTest extends TestCase
 {
@@ -56,6 +58,52 @@ class CsvGridTest extends TestCase
         $formatter = new Formatter();
         $grid->setFormatter($formatter);
         $this->assertSame($formatter, $grid->getFormatter());
+    }
+
+    public function testInitColumns()
+    {
+        $grid = $this->createCsvGrid([
+            'dataProvider' => new ArrayDataProvider([
+                'allModels' => [
+                    [
+                        'id' => 1,
+                        'name' => 'first',
+                        'description' => 'first description',
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => 'second',
+                        'description' => 'second description',
+                    ],
+                ],
+            ]),
+            'columns' => [
+                ['class' => SerialColumn::class],
+                'id',
+                'name:text',
+                [
+                    'attribute' => 'description'
+                ],
+            ],
+        ]);
+        $grid->export();
+
+        $this->assertCount(4, $grid->columns);
+        list($serialColumn, $idColumn, $nameColumn, $descriptionColumn) = $grid->columns;
+
+        $this->assertTrue($serialColumn instanceof SerialColumn);
+        /* @var $idColumn DataColumn */
+        /* @var $nameColumn DataColumn */
+        /* @var $descriptionColumn DataColumn */
+        $this->assertTrue($idColumn instanceof DataColumn);
+        $this->assertSame('id', $idColumn->attribute);
+        $this->assertSame('raw', $idColumn->format);
+        $this->assertTrue($nameColumn instanceof DataColumn);
+        $this->assertSame('name', $nameColumn->attribute);
+        $this->assertSame('text', $nameColumn->format);
+        $this->assertTrue($descriptionColumn instanceof DataColumn);
+        $this->assertSame('description', $descriptionColumn->attribute);
+        $this->assertSame('raw', $descriptionColumn->format);
     }
 
     public function testExport()
