@@ -10,8 +10,8 @@ This extension provides ability to export data to CSV file.
 
 For license information check the [LICENSE](LICENSE.md)-file.
 
-[![Latest Stable Version](https://poser.pugx.org/yii2tech/csv-grid/v/stable.png)](https://packagist.org/packages/yii2tech/csv-grid)
-[![Total Downloads](https://poser.pugx.org/yii2tech/csv-grid/downloads.png)](https://packagist.org/packages/yii2tech/csv-grid)
+[![Latest Stable Version](https://img.shields.io/packagist/v/yii2tech/csv-grid.svg)](https://packagist.org/packages/yii2tech/csv-grid)
+[![Total Downloads](https://img.shields.io/packagist/dt/yii2tech/csv-grid.svg)](https://packagist.org/packages/yii2tech/csv-grid)
 [![Build Status](https://travis-ci.org/yii2tech/csv-grid.svg?branch=master)](https://travis-ci.org/yii2tech/csv-grid)
 
 
