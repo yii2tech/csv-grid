@@ -95,6 +95,7 @@ class CsvFile extends BaseObject
                 throw new Exception('Unable to create/open file "' . $this->name . '".');
             }
         }
+
         return true;
     }
 
@@ -108,6 +109,7 @@ class CsvFile extends BaseObject
             fclose($this->fileHandler);
             $this->fileHandler = null;
         }
+
         return true;
     }
 
@@ -121,6 +123,7 @@ class CsvFile extends BaseObject
         if (file_exists($this->name)) {
             unlink($this->name);
         }
+
         return true;
     }
 

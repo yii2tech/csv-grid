@@ -84,6 +84,7 @@ class ExportResult extends BaseObject
         if ($this->_dirName === null) {
             $this->_dirName = Yii::getAlias($this->basePath) . DIRECTORY_SEPARATOR . uniqid(time(), true);
         }
+
         return $this->_dirName;
     }
 
@@ -118,6 +119,7 @@ class ExportResult extends BaseObject
                 }
             }
         }
+
         return $this->_resultFileName;
     }
 

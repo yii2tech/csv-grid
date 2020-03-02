@@ -216,6 +216,7 @@ class CsvGridTest extends TestCase
         $result = $grid->export();
         $this->assertTrue($result instanceof ExportResult);
         $this->assertCount(1, $result->csvFiles, 'Wrong number of result files.');
+        $this->assertFileExists($result->csvFiles[0]->name, 'Result file does not exist.');
 
         // Query
         $this->setupTestDbData();
@@ -228,6 +229,21 @@ class CsvGridTest extends TestCase
         $result = $grid->export();
         $this->assertTrue($result instanceof ExportResult);
         $this->assertCount(1, $result->csvFiles, 'Wrong number of result files.');
+        $this->assertFileExists($result->csvFiles[0]->name, 'Result file does not exist.');
+
+        // no headers
+        $grid = $this->createCsvGrid([
+            'showHeader' => false,
+            'showFooter' => false,
+            'dataProvider' => new ArrayDataProvider([
+                'allModels' => [],
+            ])
+        ]);
+
+        $result = $grid->export();
+        $this->assertTrue($result instanceof ExportResult);
+        $this->assertCount(1, $result->csvFiles, 'Wrong number of result files.');
+        $this->assertFileExists($result->csvFiles[0]->name, 'Result file does not exist.');
     }
 }
 
