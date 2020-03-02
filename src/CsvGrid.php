@@ -16,7 +16,7 @@ use yii\i18n\Formatter;
 
 /**
  * CsvGrid allows export of data into CSV files.
- * It supports exporting of the [[\yii\data\DataProviderInterface]] and [[\yii\db\QueryInterface]] instances.
+ * It supports exporting of the {@see \yii\data\DataProviderInterface} and {@see \yii\db\QueryInterface} instances.
  *
  * Example:
  *
@@ -59,17 +59,17 @@ class CsvGrid extends Component
 {
     /**
      * @var \yii\data\DataProviderInterface the data provider for the view.
-     * This property can be omitted in case [[query]] is set.
+     * This property can be omitted in case {@see query} is set.
      */
     public $dataProvider;
     /**
      * @var \yii\db\QueryInterface the data source query.
-     * Note: this field will be ignored in case [[dataProvider]] is set.
+     * Note: this field will be ignored in case {@see dataProvider} is set.
      */
     public $query;
     /**
      * @var int the number of records to be fetched in each batch.
-     * This property takes effect only in case of [[query]] usage.
+     * This property takes effect only in case of {@see query} usage.
      */
     public $batchSize = 100;
     /**
@@ -88,7 +88,7 @@ class CsvGrid extends Component
      * ]
      * ```
      *
-     * If a column is of class [[DataColumn]], the "class" element can be omitted.
+     * If a column is of class {@see DataColumn}, the "class" element can be omitted.
      */
     public $columns = [];
     /**
@@ -104,8 +104,8 @@ class CsvGrid extends Component
      * This property is used to render cells that have no defined content,
      * e.g. empty footer or filter cells.
      *
-     * Note that this is not used by the [[DataColumn]] if a data item is `null`. In that case
-     * the [[nullDisplay]] property will be used to indicate an empty data value.
+     * Note that this is not used by the {@see DataColumn} if a data item is `null`. In that case
+     * the {@see nullDisplay} property will be used to indicate an empty data value.
      */
     public $emptyCell = '';
     /**
@@ -125,7 +125,7 @@ class CsvGrid extends Component
      */
     public $maxEntriesPerFile;
     /**
-     * @var array configuration for [[CsvFile]] instances created in process.
+     * @var array configuration for {@see CsvFile} instances created in process.
      * For example:
      *
      * ```php
@@ -139,7 +139,7 @@ class CsvGrid extends Component
      */
     public $csvFileConfig = [];
     /**
-     * @var array configuration for [[ExportResult]] instance created in process result.
+     * @var array configuration for {@see ExportResult} instance created in process result.
      *
      * For example:
      *
@@ -155,7 +155,7 @@ class CsvGrid extends Component
 
     /**
      * @var array|Formatter the formatter used to format model attribute values into displayable texts.
-     * This can be either an instance of [[Formatter]] or an configuration array for creating the [[Formatter]]
+     * This can be either an instance of {@see Formatter} or an configuration array for creating the {@see Formatter}
      * instance. If this property is not set, the "formatter" application component will be used.
      */
     private $_formatter;
@@ -167,7 +167,7 @@ class CsvGrid extends Component
 
     /**
      * Initializes the grid.
-     * This method will initialize required property values and instantiate [[columns]] objects.
+     * This method will initialize required property values and instantiate {@see columns} objects.
      */
     public function init()
     {
@@ -235,8 +235,8 @@ class CsvGrid extends Component
     }
 
     /**
-     * This function tries to guess the columns to show from the given data
-     * if [[columns]] are not explicitly specified.
+     * This function tries to guess the columns to show from the given data,
+     * if {@see columns} are not explicitly specified.
      * @param array $model list of model
      */
     protected function guessColumns($model)
@@ -249,7 +249,7 @@ class CsvGrid extends Component
     }
 
     /**
-     * Creates a [[DataColumn]] object based on a string in the format of "attribute:format:label".
+     * Creates a {@see DataColumn} object based on a string in the format of "attribute:format:label".
      * @param string $text the column specification string
      * @return DataColumn the column instance
      * @throws InvalidConfigException if the column specification is invalid
@@ -272,7 +272,7 @@ class CsvGrid extends Component
     /**
      * Performs data export.
      * @return ExportResult export result.
-     * @throws InvalidConfigException if invalid [[resultConfig]] value.
+     * @throws InvalidConfigException if invalid {@see resultConfig} value.
      */
     public function export()
     {
@@ -347,7 +347,7 @@ class CsvGrid extends Component
     }
 
     /**
-     * Iterates over [[query]] or [[dataProvider]] returning data by batches.
+     * Iterates over {@see query} or {@see dataProvider} returning data by batches.
      * @return array|false data batch: first element - models list, second model keys list.
      */
     protected function batchModels()
@@ -440,7 +440,7 @@ class CsvGrid extends Component
      * Composes body row contents.
      * @param mixed $model the data model
      * @param mixed $key the key associated with the data model
-     * @param int $index the zero-based index of the data model among the models array returned by [[CsvGrid::$dataProvider]].
+     * @param int $index the zero-based index of the data model among the models array returned by {@see CsvGrid::$dataProvider}.
      * @return array cell contents.
      */
     protected function composeBodyRow($model, $key, $index)

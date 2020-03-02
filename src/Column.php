@@ -10,7 +10,7 @@ namespace yii2tech\csvgrid;
 use yii\base\BaseObject;
 
 /**
- * Column is the base class of all [[CsvGrid]] column classes.
+ * Column is the base class of all {@see CsvGrid} column classes.
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
@@ -33,7 +33,7 @@ class Column extends BaseObject
      * @var callable This is a callable that will be used to generate the content of each cell.
      * The signature of the function should be the following: `function ($model, $key, $index, $column)`.
      * Where `$model`, `$key`, and `$index` refer to the model, key and index of the row currently being rendered
-     * and `$column` is a reference to the [[Column]] object.
+     * and `$column` is a reference to the {@see Column} object.
      */
     public $content;
     /**
@@ -44,7 +44,7 @@ class Column extends BaseObject
 
     /**
      * Renders the header cell content.
-     * The default implementation simply renders [[header]].
+     * The default implementation simply renders {@see header}.
      * This method may be overridden to customize the rendering of the header cell.
      * @return string the rendering result
      */
@@ -55,7 +55,7 @@ class Column extends BaseObject
 
     /**
      * Renders the footer cell content.
-     * The default implementation simply renders [[footer]].
+     * The default implementation simply renders {@see footer}.
      * This method may be overridden to customize the rendering of the footer cell.
      * @return string the rendering result
      */
@@ -68,7 +68,7 @@ class Column extends BaseObject
      * Renders the data cell content.
      * @param mixed $model the data model
      * @param mixed $key the key associated with the data model
-     * @param int $index the zero-based index of the data model among the models array returned by [[CsvGrid::$dataProvider]].
+     * @param int $index the zero-based index of the data model among the models array returned by {@see CsvGrid::$dataProvider}.
      * @return string the rendering result
      */
     public function renderDataCellContent($model, $key, $index)

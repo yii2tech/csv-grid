@@ -10,7 +10,7 @@ namespace yii2tech\csvgrid;
 /**
  * SerialColumn displays a column of row numbers (1-based).
  *
- * To add a SerialColumn to the [[CsvGrid]], add it to the [[CsvGrid::$columns|columns]] configuration as follows:
+ * To add a SerialColumn to the {@see CsvGrid}, add it to the {@see CsvGrid::$columns} configuration as follows:
  *
  * ```php
  * 'columns' => [
