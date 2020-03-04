@@ -1,8 +1,8 @@
 Yii 2 CSV Data Export extension Change Log
 ==========================================
 
-1.0.5 Under Development
------------------------
+1.0.5, March 4, 2020
+--------------------
 
 - Bug #28: Fixed `CsvGrid::export()` does not create result file from empty data set with disabled `showHeader` and `showFooter` (klimov-paul)
 
